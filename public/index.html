@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wrap a present 🎁</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fff4f8;
+    --card: #ffffff;
+    --pink: #ff8fb8;
+    --pink-dark: #f06a9c;
+    --ribbon: #ffd36e;
+    --text: #6b3a52;
+    --muted: #a07b8d;
+    --line: #ffd9e7;
+    --cute-font: 'Baloo 2', ui-rounded, "SF Pro Rounded", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    min-height: 100vh; color: var(--text);
+    background: linear-gradient(160deg, #fff4f8 0%, #ffe9f5 45%, #f5eaff 100%);
+    background-attachment: fixed;
+    font-family: ui-rounded, "SF Pro Rounded", "Nunito", system-ui, sans-serif;
+    display: flex; justify-content: center; padding: 32px 16px 48px;
+    -webkit-tap-highlight-color: transparent;
+    position: relative; overflow-x: hidden;
+  }
+  main { width: 100%; max-width: 420px; position: relative; z-index: 1; }
+  h1 { font-family: var(--cute-font); font-weight: 800; font-size: 1.7rem; text-align: center; }
+  .twinkle { display: inline-block; animation: twinkle 2.4s ease-in-out infinite; }
+  @keyframes twinkle {
+    0%, 100% { transform: rotate(0) scale(1); }
+    50% { transform: rotate(-8deg) scale(1.15); }
+  }
+  .sub { text-align: center; color: var(--muted); margin: 6px 0 24px; font-weight: 600; }
+
+  .sparkles { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+  .sparkles span {
+    position: absolute; bottom: -40px; font-size: 1.2rem; opacity: 0;
+    animation: drift 9s ease-in infinite;
+  }
+  @keyframes drift {
+    0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+    10% { opacity: .55; }
+    90% { opacity: .4; }
+    100% { transform: translateY(-110vh) rotate(25deg); opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sparkles, .twinkle { animation: none; }
+  }
+
+  .card {
+    background: var(--card); border-radius: 22px; padding: 20px;
+    box-shadow: 0 10px 30px rgba(240, 106, 156, .15);
+  }
+
+  .picker {
+    display: grid; place-items: center; text-align: center;
+    aspect-ratio: 1; border: 3px dashed var(--line); border-radius: 16px;
+    cursor: pointer; overflow: hidden; position: relative;
+    color: var(--muted); font-weight: 700; transition: border-color .2s;
+  }
+  .picker:hover, .picker:focus-within { border-color: var(--pink); }
+  .picker .big { font-size: 3rem; display: block; margin-bottom: 8px; }
+  .picker img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .picker input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+
+  label.field { display: block; margin-top: 16px; font-family: var(--cute-font); font-weight: 700; font-size: .95rem; }
+  label.field.check {
+    display: flex; align-items: center; gap: 8px; font-size: .9rem;
+    color: var(--muted); cursor: pointer;
+  }
+  label.field.check input { width: 18px; height: 18px; accent-color: var(--pink); }
+  textarea, input[type=password], input[type=text] {
+    width: 100%; margin-top: 6px; padding: 12px 14px; font: inherit; font-weight: 600;
+    color: var(--text); background: var(--bg); border: 2px solid var(--line);
+    border-radius: 14px; outline: none; resize: none;
+  }
+  textarea:focus, input:focus { border-color: var(--pink); }
+  .count { text-align: right; font-size: .8rem; color: var(--muted); margin-top: 4px; }
+  .hidden { display: none !important; }
+
+  button, .btn {
+    display: block; width: 100%; margin-top: 18px; padding: 14px; border: 0;
+    border-radius: 999px; font-family: var(--cute-font); font-size: 1.1rem; font-weight: 800;
+    color: #fff; background: var(--pink); box-shadow: inset 0 -4px 0 var(--pink-dark);
+    cursor: pointer; text-align: center; text-decoration: none;
+    transition: transform .15s ease;
+  }
+  button:active:not(:disabled), .btn:active { transform: scale(.96); }
+  button:disabled { opacity: .5; cursor: default; }
+  .btn.ghost, button.ghost { background: transparent; color: var(--pink-dark); box-shadow: inset 0 0 0 2px var(--line); }
+
+  .progress { height: 10px; border-radius: 99px; background: var(--line); margin-top: 16px; overflow: hidden; }
+  .progress div { height: 100%; width: 0; background: var(--ribbon); transition: width .2s; }
+  .error { color: #d6336c; font-weight: 700; margin-top: 12px; text-align: center; }
+
+  .done { text-align: center; }
+  .done .big { font-size: 3.5rem; display: inline-block; animation: popIn .5s ease; }
+  @keyframes popIn {
+    0% { transform: scale(.3) rotate(-10deg); opacity: 0; }
+    70% { transform: scale(1.15) rotate(5deg); }
+    100% { transform: scale(1) rotate(0); opacity: 1; }
+  }
+  .done h2 { font-family: var(--cute-font); margin: 6px 0 4px; }
+  .linkbox { margin-top: 14px; font-size: .95rem; text-align: center; }
+  .note { font-size: .85rem; color: var(--muted); margin-top: 14px; text-align: center; }
+</style>
+</head>
+<body>
+<div class="sparkles" aria-hidden="true">
+  <span style="left:8%; animation-delay:0s;">✨</span>
+  <span style="left:22%; animation-delay:1.8s;">💗</span>
+  <span style="left:40%; animation-delay:3.4s;">⭐</span>
+  <span style="left:62%; animation-delay:.9s;">✨</span>
+  <span style="left:78%; animation-delay:2.6s;">🌸</span>
+  <span style="left:90%; animation-delay:4.2s;">💗</span>
+</div>
+<main>
+  <h1>Wrap a present <span class="twinkle">🎁</span></h1>
+  <p class="sub">Pick a photo, get a tap-to-unwrap link</p>
+
+  <form class="card" id="form">
+    <label class="picker" id="picker">
+      <input type="file" id="file" accept="image/*" required>
+      <span id="pickerText"><span class="big">📷</span>Tap to choose a photo</span>
+      <img id="preview" class="hidden" alt="">
+    </label>
+
+    <label class="field">Message (optional)
+      <textarea id="message" rows="2" maxlength="280" placeholder="e.g. Happy birthday! 💕"></textarea>
+    </label>
+    <div class="count"><span id="count">0</span>/280</div>
+
+    <label class="field check">
+      <input type="checkbox" id="burn">
+      Delete after it's opened
+    </label>
+
+    <label class="field hidden" id="pwField">Password
+      <input type="password" id="password" autocomplete="current-password">
+    </label>
+
+    <div class="progress hidden" id="progress"><div></div></div>
+    <p class="error hidden" id="error"></p>
+    <button type="submit" id="submit">Wrap it 🎀</button>
+  </form>
+
+  <section class="card done hidden" id="done">
+    <div class="big">🎁</div>
+    <h2>All wrapped!</h2>
+    <input type="text" class="linkbox" id="link" readonly>
+    <button id="share" class="hidden">Share link</button>
+    <button id="copy">Copy link</button>
+    <a class="btn ghost" id="previewLink" target="_blank" rel="noopener">Peek at it</a>
+    <button class="ghost" id="again">Wrap another</button>
+    <p class="note">Anyone with the link can open it, so only send it to whoever it’s for.</p>
+  </section>
+</main>
+
+<script type="module">
+  import { upload } from '/blob-client.js';
+
+  const $ = (id) => document.getElementById(id);
+  const form = $('form'), fileInput = $('file'), preview = $('preview');
+  const msg = $('message'), pwField = $('pwField'), pw = $('password');
+  const progress = $('progress'), bar = progress.firstElementChild;
+  const errorEl = $('error'), submit = $('submit');
+
+  const MAX_SIDE = 2048;
+
+  // Remember the password on this device if one was needed before.
+  try {
+    const saved = localStorage.getItem('unwrap-pw');
+    if (saved) { pw.value = pw.defaultValue = saved; pwField.classList.remove('hidden'); }
+  } catch {}
+
+  msg.addEventListener('input', () => { $('count').textContent = msg.value.length; });
+
+  fileInput.addEventListener('change', () => {
+    const f = fileInput.files[0];
+    if (!f) return;
+    preview.src = URL.createObjectURL(f);
+    preview.onerror = () => { preview.classList.add('hidden'); $('pickerText').innerHTML = '<span class="big">✅</span>' + escapeHtml(f.name); $('pickerText').classList.remove('hidden'); };
+    preview.classList.remove('hidden');
+    $('pickerText').classList.add('hidden');
+  });
+
+  function escapeHtml(s) { return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+
+  function newId() {
+    const bytes = crypto.getRandomValues(new Uint8Array(12));
+    return btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_');
+  }
+
+  function isHeic(file) {
+    return /image\/hei[cf]/i.test(file.type) || /\.(heic|heif)$/i.test(file.name);
+  }
+
+  // Shrink big photos and re-encode as JPEG. This also strips EXIF data (e.g. GPS location).
+  async function prepare(file) {
+    try {
+      const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
+      const scale = Math.min(1, MAX_SIDE / Math.max(bmp.width, bmp.height));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(bmp.width * scale);
+      canvas.height = Math.round(bmp.height * scale);
+      canvas.getContext('2d').drawImage(bmp, 0, 0, canvas.width, canvas.height);
+      const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', 0.88));
+      if (blob) return blob;
+    } catch {}
+    // This browser can't decode HEIC — uploading it as-is would mean most
+    // recipients (anyone not on Safari) just see a broken image.
+    if (isHeic(file)) throw new Error('HEIC_UNSUPPORTED');
+    return file;
+  }
+
+  function showError(text) {
+    progress.classList.add('hidden');
+    errorEl.textContent = text;
+    errorEl.classList.remove('hidden');
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const file = fileInput.files[0];
+    if (!file) return showError('Pick a photo first');
+
+    errorEl.classList.add('hidden');
+    submit.disabled = true;
+    submit.textContent = 'Wrapping…';
+    progress.classList.remove('hidden');
+    bar.style.width = '0';
+
+    const id = newId();
+    const password = pw.value;
+
+    try {
+      const body = await prepare(file);
+      await upload(`gifts/${id}/photo`, body, {
+        access: 'private',
+        handleUploadUrl: '/api/upload',
+        clientPayload: JSON.stringify({ password }),
+        contentType: body.type || file.type,
+        onUploadProgress: ({ percentage }) => { bar.style.width = percentage + '%'; },
+      });
+
+      const res = await fetch('/api/create', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ id, message: msg.value, password, burnAfterOpen: $('burn').checked }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Something went wrong');
+
+      try { if (password) { localStorage.setItem('unwrap-pw', password); pw.defaultValue = password; } } catch {}
+
+      const url = new URL(data.url, location.origin).href;
+      $('link').value = url;
+      $('previewLink').href = url;
+      if (navigator.share) $('share').classList.remove('hidden');
+      form.classList.add('hidden');
+      $('done').classList.remove('hidden');
+    } catch (err) {
+      const text = String(err && err.message || err);
+      if (text === 'HEIC_UNSUPPORTED') {
+        showError('This browser can’t convert that HEIC photo, and most recipients couldn’t view it either — try again in Safari, or save it as JPEG first (Photos → Share → Save as JPEG).');
+      } else if (/password/i.test(text)) {
+        pwField.classList.remove('hidden');
+        pw.focus();
+        showError(pw.value ? 'That password isn’t right' : 'This needs a password');
+      } else if (/content type/i.test(text)) {
+        showError('That file type isn’t supported — try a JPEG or PNG');
+      } else if (/too large|size/i.test(text)) {
+        showError('That photo is too big');
+      } else {
+        showError(text);
+      }
+    } finally {
+      submit.disabled = false;
+      submit.textContent = 'Wrap it 🎀';
+    }
+  });
+
+  $('copy').addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText($('link').value); }
+    catch { $('link').select(); document.execCommand('copy'); }
+    $('copy').textContent = 'Copied! ✨';
+    setTimeout(() => { $('copy').textContent = 'Copy link'; }, 1600);
+  });
+
+  $('share').addEventListener('click', () => {
+    navigator.share({ title: 'You’ve got a present 🎁', url: $('link').value }).catch(() => {});
+  });
+
+  $('again').addEventListener('click', () => {
+    form.reset();
+    $('count').textContent = '0';
+    preview.classList.add('hidden');
+    $('pickerText').innerHTML = '<span class="big">📷</span>Tap to choose a photo';
+    $('pickerText').classList.remove('hidden');
+    progress.classList.add('hidden');
+    $('done').classList.add('hidden');
+    form.classList.remove('hidden');
+  });
+</script>
+</body>
+</html>

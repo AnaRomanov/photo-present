@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A present for you 🎁</title>
+<!-- Link preview text in Messenger. Deliberately NO og:image so the photo isn't spoiled. -->
+<meta property="og:title" content="You've got a present 🎁">
+<meta property="og:description" content="Tap to unwrap">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  /* ===== Colours ===== */
+  :root {
+    --bg: #fff4f8;
+    --box: #ff8fb8;
+    --box-dark: #f06a9c;
+    --ribbon: #ffd36e;
+    --text: #6b3a52;
+    --cute-font: 'Baloo 2', ui-rounded, "SF Pro Rounded", system-ui, sans-serif;
+  }
+  /* =================== */
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    background: linear-gradient(160deg, #fff4f8 0%, #ffe9f5 45%, #f5eaff 100%);
+    color: var(--text);
+    font-family: ui-rounded, "SF Pro Rounded", "Nunito", system-ui, sans-serif;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden; position: relative;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .sparkles { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+  .sparkles span {
+    position: absolute; bottom: -40px; font-size: 1.2rem; opacity: 0;
+    animation: drift 9s ease-in infinite;
+  }
+  @keyframes drift {
+    0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+    10% { opacity: .55; }
+    90% { opacity: .4; }
+    100% { transform: translateY(-110vh) rotate(25deg); opacity: 0; }
+  }
+
+  .stage { position: relative; width: min(88vw, 420px); text-align: center; z-index: 1; }
+
+  .hint {
+    margin-top: 28px; font-family: var(--cute-font); font-weight: 700; font-size: 1.1rem; opacity: .8;
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse { 50% { opacity: .35; } }
+  @media (prefers-reduced-motion: reduce) {
+    .sparkles { display: none; }
+  }
+
+  /* ---- gift ---- */
+  .gift {
+    position: relative; width: 200px; height: 200px; margin: 0 auto;
+    cursor: pointer; animation: wiggle 2.4s ease-in-out infinite;
+  }
+  @keyframes wiggle {
+    0%, 80%, 100% { transform: rotate(0); }
+    84% { transform: rotate(-6deg); } 88% { transform: rotate(6deg); }
+    92% { transform: rotate(-4deg); } 96% { transform: rotate(3deg); }
+  }
+  .box {
+    position: absolute; bottom: 0; left: 15px; width: 170px; height: 130px;
+    background: var(--box); border-radius: 10px;
+    box-shadow: inset 0 -12px 0 var(--box-dark);
+  }
+  .box::before { /* vertical ribbon */
+    content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 26px;
+    transform: translateX(-50%); background: var(--ribbon);
+  }
+  .box::after { /* kawaii peeking face: a dot plus box-shadow "clones" for the eyes/blush */
+    content: ""; position: absolute; top: 46px; left: 48px; z-index: 1;
+    width: 8px; height: 8px; border-radius: 50%; background: var(--text);
+    box-shadow:
+      74px 0 0 0 var(--text),
+      -18px 18px 0 4px rgba(255,255,255,.75),
+      92px 18px 0 4px rgba(255,255,255,.75);
+  }
+  .lid {
+    position: absolute; top: 34px; left: 0; width: 200px; height: 46px;
+    background: var(--box); border-radius: 10px;
+    box-shadow: inset 0 -8px 0 var(--box-dark);
+    transition: transform .7s cubic-bezier(.3,1.6,.5,1), opacity .5s .3s;
+    z-index: 2;
+  }
+  .lid::before {
+    content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 26px;
+    transform: translateX(-50%); background: var(--ribbon);
+  }
+  .bow {
+    position: absolute; left: 50%; top: -30px; transform: translateX(-50%);
+    width: 80px; height: 36px;
+  }
+  .bow::before, .bow::after {
+    content: ""; position: absolute; top: 0; width: 38px; height: 34px;
+    border: 9px solid var(--ribbon); border-radius: 50% 50% 10% 50%;
+  }
+  .bow::before { left: 0; transform: rotate(-20deg); }
+  .bow::after  { right: 0; transform: rotate(20deg) scaleX(-1); }
+
+  .opened .gift { animation: none; cursor: default; }
+  .opened .lid { transform: translate(60px, -260px) rotate(40deg); opacity: 0; }
+  .opened .box { transition: transform .5s .35s, opacity .5s .35s; transform: translateY(60px) scale(.8); opacity: 0; }
+  .opened .hint { display: none; }
+
+  /* ---- reveal ---- */
+  .reveal {
+    position: absolute; inset: 50% auto auto 50%;
+    width: 100%; transform: translate(-50%, -50%) scale(.4);
+    opacity: 0; pointer-events: none;
+    transition: transform .7s .5s cubic-bezier(.3,1.5,.5,1), opacity .4s .5s;
+  }
+  .opened .reveal { transform: translate(-50%, -50%) scale(1); opacity: 1; pointer-events: auto; }
+  .reveal img {
+    width: 100%; max-height: 70vh; object-fit: contain;
+    border-radius: 18px; background: #fff; padding: 10px;
+    box-shadow: 0 12px 40px rgba(107, 58, 82, .25);
+  }
+  .message { margin-top: 18px; font-family: var(--cute-font); font-size: 1.25rem; font-weight: 700; }
+
+  /* ---- confetti ---- */
+  .confetti {
+    position: fixed; top: 50%; left: 50%; width: 10px; height: 14px;
+    border-radius: 3px; pointer-events: none; z-index: 10;
+    animation: burst 1.6s cubic-bezier(.2,.7,.4,1) forwards;
+  }
+  @keyframes burst {
+    to { transform: translate(var(--x), var(--y)) rotate(var(--r)); opacity: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gift, .hint { animation: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="sparkles" aria-hidden="true">
+    <span style="left:8%; animation-delay:0s;">✨</span>
+    <span style="left:22%; animation-delay:1.8s;">💗</span>
+    <span style="left:40%; animation-delay:3.4s;">⭐</span>
+    <span style="left:62%; animation-delay:.9s;">✨</span>
+    <span style="left:78%; animation-delay:2.6s;">🌸</span>
+    <span style="left:90%; animation-delay:4.2s;">💗</span>
+  </div>
+  <main class="stage" id="stage">
+    <div class="gift" id="gift" role="button" tabindex="0" aria-label="Tap to unwrap your present">
+      <div class="lid"><div class="bow"></div></div>
+      <div class="box"></div>
+    </div>
+    <p class="hint">Tap to unwrap ✨</p>
+
+    <div class="reveal" aria-live="polite">
+      <img id="photo" alt="Your present">
+      <p class="message" id="message"></p>
+    </div>
+  </main>
+
+<script>
+  const stage = document.getElementById('stage');
+  const gift = document.getElementById('gift');
+  const hint = document.querySelector('.hint');
+  const photo = document.getElementById('photo');
+  const messageEl = document.getElementById('message');
+
+  // Gift id comes from /g/<id>
+  const id = location.pathname.split('/').filter(Boolean).pop() || '';
+  let ready = false;
+
+  function fail(text) {
+    gift.style.display = 'none';
+    hint.style.animation = 'none';
+    hint.textContent = text;
+  }
+
+  // Load everything up front so the reveal is instant, but keep it hidden until tapped.
+  hint.textContent = 'Loading your present…';
+  let metaLoaded = false;
+  fetch(`/api/gift?id=${encodeURIComponent(id)}`)
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(data => {
+      metaLoaded = true;
+      messageEl.textContent = data.message || '';
+      photo.src = `/api/gift?id=${encodeURIComponent(id)}&photo=1`;
+      return photo.decode();
+    })
+    .then(() => {
+      ready = true;
+      hint.textContent = 'Tap to unwrap ✨';
+    })
+    .catch(() => fail(metaLoaded ? 'This present couldn’t be opened 😢' : 'This present couldn’t be found 😢'));
+  const colours = ['#ff8fb8', '#ffd36e', '#9fd8ff', '#b9f2c4', '#d7b8ff'];
+
+  function confetti() {
+    for (let i = 0; i < 60; i++) {
+      const c = document.createElement('span');
+      c.className = 'confetti';
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 150 + Math.random() * 250;
+      c.style.setProperty('--x', Math.cos(angle) * dist + 'px');
+      c.style.setProperty('--y', Math.sin(angle) * dist + 'px');
+      c.style.setProperty('--r', (Math.random() * 720 - 360) + 'deg');
+      c.style.background = colours[i % colours.length];
+      c.style.borderRadius = Math.random() < 0.5 ? '50%' : '3px';
+      c.style.animationDelay = (Math.random() * .15) + 's';
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 2000);
+    }
+  }
+
+  function open() {
+    if (!ready || stage.classList.contains('opened')) return;
+    stage.classList.add('opened');
+    if (navigator.vibrate) navigator.vibrate(40);
+    setTimeout(confetti, 350);
+    // Tells the server this gift was actually opened, so "delete after opened" gifts can self-destruct.
+    fetch(`/api/gift?id=${encodeURIComponent(id)}`, { method: 'POST' }).catch(() => {});
+  }
+
+  gift.addEventListener('click', open);
+  gift.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+  });
+</script>
+</body>
+</html>
